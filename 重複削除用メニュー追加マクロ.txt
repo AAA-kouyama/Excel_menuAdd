@@ -1,0 +1,43 @@
+'標準モジュールを追加して配置してください
+
+Private Const メニュー名 As String = "重複削除"      '※1 好きなメニュー名に書き換える
+
+Public Sub 右クリックメニュー追加()
+    Dim cb As CommandBar
+
+    For Each cb In CommandBars
+        If cb.BuiltIn = True And cb.Name = "Cell" Then
+            On Error Resume Next
+            cb.Controls(メニュー名).Delete
+            With cb.Controls.Add(before:=1, Type:=msoControlButton)  'before:= 表示位置
+                .Caption = メニュー名
+                .OnAction = " RemoveDuplicates"        '実行するプロシージャを指定
+            End With
+        End If
+    Next cb
+End Sub
+
+Public Sub 追加メニュー削除()
+Dim cb As CommandBar
+    For Each cb In CommandBars
+        If cb.BuiltIn = True And cb.Name = "Cell" Then
+            On Error Resume Next
+            cb.Controls(メニュー名).Delete
+        End If
+    Next cb
+End Sub
+
+Sub RemoveDuplicates()
+    Dim selectedRange As Range
+    On Error Resume Next
+    Set selectedRange = Selection
+    On Error GoTo 0
+    
+    If selectedRange Is Nothing Then
+        MsgBox "先にセル範囲を選択してください。", vbExclamation, "エラー"
+        Exit Sub
+    End If
+    
+    selectedRange.RemoveDuplicates Columns:=1, Header:=xlNo
+    MsgBox "選択範囲から重複データが削除されました。", vbInformation, "成功"
+End Sub
