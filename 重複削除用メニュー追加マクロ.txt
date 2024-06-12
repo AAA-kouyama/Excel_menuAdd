@@ -38,6 +38,28 @@ Sub RemoveDuplicates()
         Exit Sub
     End If
     
-    selectedRange.RemoveDuplicates Columns:=1, Header:=xlNo
-    MsgBox "選択範囲から重複データが削除されました。", vbInformation, "成功"
-End Sub
+    ' 重複を削除
+    Dim ws As Worksheet
+    Set ws = selectedRange.Worksheet
+    ws.Range(selectedRange.Address).RemoveDuplicates Columns:=1, Header:=xlNo
+    
+    ' 空白行を削除
+    Dim lastRow As Long
+    lastRow = Selection.Rows.Count + Selection.Row - 1
+    
+    Dim firstRow As Long
+    firstRow = ActiveSheet.UsedRange.Rows(1).Row
+
+    Dim last As Long
+    For i = lastRow To firstRow Step -1
+        If WorksheetFunction.CountA(ws.Rows(i)) = 0 Then
+            ws.Rows(i).Delete
+            last = i
+        End If
+    Next i
+    
+    If last <> 0 Then
+        Cells(last, 1).Select
+    End If
+    
+    'MsgBox "選択範囲から重複データと空白行が削除されました。", vbInformation, "成功"
