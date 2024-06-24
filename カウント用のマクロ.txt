@@ -1,0 +1,62 @@
+'標準モジュールを追加して配置してください
+
+Private Const メニュー名 As String = "カウント"      '※1 好きなメニュー名に書き換える
+
+Public Sub 右クリックメニュー追加()
+    Dim cb As CommandBar
+
+    For Each cb In CommandBars
+        If cb.BuiltIn = True And cb.Name = "Cell" Then
+            On Error Resume Next
+            cb.Controls(メニュー名).Delete
+            With cb.Controls.Add(before:=1, Type:=msoControlButton)  'before:= 表示位置
+                .Caption = メニュー名
+                .OnAction = "SelectRangeUntilBlankCellAndCount"        '実行するプロシージャを指定
+            End With
+        End If
+    Next cb
+End Sub
+
+Public Sub 追加メニュー削除()
+Dim cb As CommandBar
+    For Each cb In CommandBars
+        If cb.BuiltIn = True And cb.Name = "Cell" Then
+            On Error Resume Next
+            cb.Controls(メニュー名).Delete
+        End If
+    Next cb
+End Sub
+
+Sub SelectRangeUntilBlankCellAndCount()
+    Dim ws As Worksheet
+    Dim currentCell As Range
+    Dim targetRange As Range
+    Dim cellCount As Long
+    
+    ' シート名を指定
+    Set ws = ThisWorkbook.Sheets("Sheet1")
+    
+    ' 現在のセルから一つ下を取得
+    Set currentCell = ActiveCell.Offset(1, 0)
+    
+    ' 空白のセルまでの範囲を選択
+    Set targetRange = ws.Range(currentCell, currentCell.End(xlDown))
+    
+    ' 選択した範囲のセル数をカウント
+    cellCount = targetRange.Cells.Count
+    
+    ' カウント更新用セルに移動
+    Set currentCell = currentCell.Offset(-1, 0)
+    
+    ' 現在のセルにカウント結果を更新
+    currentCell.Value = cellCount
+    
+    ' 次の処理用に移動
+    Set currentCell = currentCell.Offset(cellCount + 1, 0)
+    currentCell.Select
+    
+End Sub
+
+' このコードをExcelのVBAエディタに貼り付けて実行してください。
+' シート名やセルの位置を適宜変更してください。
+' セルの数が表示されます。
