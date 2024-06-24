@@ -45,6 +45,11 @@ Sub SelectRangeUntilBlankCellAndCount()
     ' 選択した範囲のセル数をカウント
     cellCount = targetRange.Cells.Count
     
+    ' 範囲選択時に１行だと次の値出現行までカウントするので修正
+    If WorksheetFunction.CountA(targetRange) <> cellCount Then
+        cellCount = 1
+    End If
+    
     ' カウント更新用セルに移動
     Set currentCell = currentCell.Offset(-1, 0)
     
