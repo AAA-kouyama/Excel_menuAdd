@@ -1,0 +1,65 @@
+'標準モジュールを追加して配置してください
+
+Private Const メニュー名 As String = "明細削除"      '※1 好きなメニュー名に書き換える
+
+Public Sub 右クリックメニュー追加()
+    Dim cb As CommandBar
+
+    For Each cb In CommandBars
+        If cb.BuiltIn = True And cb.Name = "Cell" Then
+            On Error Resume Next
+            cb.Controls(メニュー名).Delete
+            With cb.Controls.Add(before:=1, Type:=msoControlButton)  'before:= 表示位置
+                .Caption = メニュー名
+                .OnAction = " RemoveDetails"        '実行するプロシージャを指定
+            End With
+        End If
+    Next cb
+End Sub
+
+Public Sub 追加メニュー削除()
+Dim cb As CommandBar
+    For Each cb In CommandBars
+        If cb.BuiltIn = True And cb.Name = "Cell" Then
+            On Error Resume Next
+            cb.Controls(メニュー名).Delete
+        End If
+    Next cb
+End Sub
+
+Sub RemoveDetails()
+    On Error Resume Next
+    On Error GoTo 0
+  
+    If Selection.Areas.Count > 1 Then
+        MsgBox "複数のセル範囲が選択されています。", vbInformation, "情報"
+        Exit Sub
+    End If
+    
+    Dim targetCell As Range
+    Dim lastCell As Range
+    
+    ' 現在のセルから一つ下を取得
+    Set targetCell = ActiveCell.Offset(1, 0)
+    
+    
+    ' 値が入っている最終行まで選択
+    Set lastCell = targetCell.End(xlDown)
+    'Range(targetCell, lastCell - 1).Select
+    
+    ' 選択した行を削除
+    Rows(targetCell.Row & ":" & lastCell.Row - 1).Delete
+    
+    ' 削除後の次の空白行を検索
+    Dim nextEmptyRow As Long
+    nextEmptyRow = lastCell.Row + 1
+    While Cells(nextEmptyRow, ActiveCell.Column).Value <> ""
+        nextEmptyRow = nextEmptyRow + 1
+    Wend
+    
+    ' 次の空白行の一つ上に移動
+    Cells(nextEmptyRow - 1, ActiveCell.Column).Select
+
+End Sub
+
+
